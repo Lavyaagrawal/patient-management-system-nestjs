@@ -1,47 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePatientDto } from './dto/create-patient.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { Patient } from './patient.entity';
 
 @Injectable()
 export class PatientsService {
-  private patients: any[] = [];
+  constructor(
+    @InjectRepository(Patient)
+    private patientRepo: Repository<Patient>,
+  ) {}
 
-  getAll() {
-    return this.patients;
+  findAll() {
+    return this.patientRepo.find();
   }
 
-  addPatient(patient: CreatePatientDto) {
-    const newPatient = {
-      id: Date.now().toString(),
-      ...patient,
-    };
-
-    this.patients.push(newPatient);
-    return newPatient;
+  create(data: any) {
+    return this.patientRepo.save(data);
   }
 
-  update(id: string, data: CreatePatientDto) {
-    const patient = this.patients.find((p) => p.id === id);
-
-    if (!patient) {
-      throw new NotFoundException('Patient not found');
-    }
-
-    Object.assign(patient, data);
-    return patient;
+  findOne(id: number) {
+    return this.patientRepo.findOneBy({ id });
   }
 
-  remove(id: string) {
-    const index = this.patients.findIndex((p) => p.id === id);
+  update(id: number, data: any) {
+    return this.patientRepo.update(id, data);
+  }
 
-    if (index === -1) {
-      throw new NotFoundException('Patient not found');
-    }
-
-    const deleted = this.patients.splice(index, 1);
-
-    return {
-      message: 'Patient deleted successfully',
-      data: deleted[0],
-    };
+  remove(id: number) {
+    return this.patientRepo.delete(id);
   }
 }
