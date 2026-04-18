@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -15,12 +15,16 @@ export class PatientsService {
     return this.patientRepo.find();
   }
 
-  create(data: any) {
-    return this.patientRepo.save(data);
+  async findOne(id: number) {
+    const patient = await this.patientRepo.findOneBy({ id });
+    if (!patient) {
+      throw new NotFoundException('Patient not found');
+    }
+    return patient;
   }
 
-  findOne(id: number) {
-    return this.patientRepo.findOneBy({ id });
+  create(data: any) {
+    return this.patientRepo.save(data);
   }
 
   update(id: number, data: any) {
