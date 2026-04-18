@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forRoot({
       type: 'mysql',
       url: process.env.MYSQL_PUBLIC_URL,
+      autoLoadEntities: true, // ⭐ THIS LINE FIXES YOUR ERROR
       synchronize: true,
       ssl: {
         rejectUnauthorized: false,
